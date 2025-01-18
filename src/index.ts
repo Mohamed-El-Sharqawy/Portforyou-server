@@ -1,26 +1,16 @@
-import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { typeDefs, resolvers } from './schema/index.js';
-import Database from './config/database.js';
+import { startServer } from "./server";
+import logger from "./lib/utils/logger";
 
-async function startServer() {
-  // Initialize database connection
-  const db = Database.getInstance();
-  await db.connect();
+logger.info("Starting server...");
 
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+startServer()
+  .then(() => {
+    logger.info("Server started successfully");
+  })
+  .catch((error) => {
+    logger.error("Failed to start server:", {
+      error: error.message,
+      stack: error.stack,
+    });
+    process.exit(1);
   });
-
-  const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 },
-  });
-
-  console.log(`🚀 Server ready at ${url}`);
-}
-
-startServer().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});

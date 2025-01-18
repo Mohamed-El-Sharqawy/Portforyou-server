@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
+    "dev": "nodemon --exec \"node --import tsx\" src/index.ts",
+    "dev:watch": "tsx watch src/index.ts",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,17 +16,23 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.2",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",
-    "graphql": "^16.8.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/graphql": "^14.5.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
-    "dotenv": "^16.3.1"
+    "winston": "^3.17.0"
   }
 }

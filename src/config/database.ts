@@ -8,7 +8,7 @@ class Database {
   private uri: string;
 
   private constructor() {
-    this.uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/arik_portfolio';
+    this.uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/db_name';
   }
 
   public static getInstance(): Database {
