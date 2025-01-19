@@ -1,9 +1,13 @@
 import Database from "./config/database";
 import logger from "./lib/utils/logger";
 
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { typeDefs, resolvers } from "./schema";
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import { typeDefs, resolvers } from './schema';
 import { DEFAULT_PORT } from "./lib/constants";
 
 export async function startServer() {
@@ -11,14 +15,29 @@ export async function startServer() {
   await db.connect();
   logger.info('Database connected successfully');
 
+  const app = express();
+  const httpServer = http.createServer(app);
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 
-  const { url } = await startStandaloneServer(server, {
-    listen: { port: DEFAULT_PORT },
-  });
+  await server.start();
 
-  logger.info(`Server ready at ${url}`);
+  app.use(
+    '/graphql',
+    cors<cors.CorsRequest>({ 
+      origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
+      credentials: true
+    }),
+    express.json(),
+    // @ts-ignore
+    expressMiddleware(server),
+  );
+
+  await new Promise<void>((resolve) => httpServer.listen({ port: DEFAULT_PORT }, resolve));
+  logger.info(`Server ready at http://localhost:${DEFAULT_PORT}/graphql`);
+
+  return httpServer;
 }

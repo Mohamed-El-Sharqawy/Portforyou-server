@@ -1,17 +1,25 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { IArik, ArikSchema } from "../../models/Arik";
 import { SubscriptionType } from "../../lib/constants";
+import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
   email: string;
   username: string;
+  password?: string;
+  passwordHash: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  lastLoginAttempt?: Date;
+  loginAttempts: number;
+  locked: boolean;
   arikTemplate: IArik;
   selectedTemplates: string[];
   subscription: SubscriptionType;
   createdAt: Date;
   updatedAt: Date;
-  clerkId: string;
-};
+  comparePassword(password: string): Promise<boolean>;
+}
 
 const UserSchema = new Schema<IUser>(
   {
@@ -22,22 +30,33 @@ const UserSchema = new Schema<IUser>(
       trim: true,
       lowercase: true,
     },
-    clerkId: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
+    },
+    passwordHash: {
+      type: String,
+      required: true,
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    lastLoginAttempt: Date,
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    locked: {
+      type: Boolean,
+      default: false,
+    },
+    arikTemplate: {
+      type: ArikSchema,
+      default: {},
     },
     selectedTemplates: [
       {
         type: String,
-        default: [],
       },
     ],
     subscription: {
@@ -45,11 +64,26 @@ const UserSchema = new Schema<IUser>(
       enum: Object.values(SubscriptionType),
       default: SubscriptionType.TRIAL,
     },
-    arikTemplate: ArikSchema,
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model<IUser>("User", UserSchema);
+// Virtual field for password that only sets, never gets
+UserSchema.virtual("password").set(function (password: string) {
+  if (password) {
+    const salt = bcrypt.genSaltSync(12);
+    this.passwordHash = bcrypt.hashSync(password, salt);
+  }
+});
+
+// Method to compare password
+UserSchema.methods.comparePassword = async function (
+  password: string
+): Promise<boolean> {
+  if (!password || !this.passwordHash) return false;
+  return bcrypt.compare(password, this.passwordHash);
+};
+
+export const User = mongoose.model<IUser>("User", UserSchema);

@@ -1,12 +1,6 @@
 import { gql } from "graphql-tag";
 
 export const userTypeDefs = gql`
-  enum SubscriptionType {
-    REGULAR
-    PREMIUM
-    VIP
-  }
-
   type TestimonialClient {
     client_img_url: String
     client_name: String
@@ -76,10 +70,9 @@ export const userTypeDefs = gql`
     id: ID!
     email: String!
     username: String!
-    subscription: SubscriptionType!
+    subscription: String!
     createdAt: String!
     updatedAt: String!
-    clerkId: String!
     arikTemplate: Arik
     selectedTemplates: [String]
   }
@@ -152,7 +145,6 @@ export const userTypeDefs = gql`
   input UpdateUserInput {
     email: String
     username: String
-    subscription: SubscriptionType
   }
 
   type Query {

@@ -1,5 +1,6 @@
 import { authResolvers } from "./modules/auth";
 import { authTypeDefs } from "./modules/auth";
+
 import { userTypeDefs } from "./modules/user";
 import { userResolvers } from "./modules/user";
 

@@ -1,5 +1,5 @@
 import logger from "../../lib/utils/logger";
-import User from "./user.model";
+import { User } from "./user.model";
 import { IUser } from "./user.model";
 import { createDotNotationUpdate } from "../../lib/utils/object.utils";
 import { IArikTemplate } from "../../lib/types/template.types";
@@ -47,15 +47,16 @@ export class UserService {
     userData: Partial<IUser>
   ): Promise<IUser | null> {
     try {
-      return User.findByIdAndUpdate(
-        id,
-        { $set: userData },
-        { new: true, runValidators: true }
-      );
-    } catch (error) {
-      logger.error("Error updating user:", { error, userId: id });
-      throw error;
+      return User.findByIdAndUpdate(id, createDotNotationUpdate('', userData), {
+        new: true,
+      });
+    } catch (error: any) {
+      throw handleMongoError(error);
     }
+  }
+
+  async findOneByQuery(query: Record<string, any>): Promise<IUser | null> {
+    return User.findOne(query);
   }
 
   async deleteUser(id: string): Promise<boolean> {

@@ -31,6 +31,12 @@ export class ValidationError extends AppError {
   }
 }
 
+export class AuthenticationError extends AppError {
+  constructor(message: string) {
+    super(message, 'AUTHENTICATION_ERROR', 401);
+  }
+}
+
 export class DuplicateKeyError extends AppError {
   constructor(field: string) {
     super(`${field} already exists`, 'DUPLICATE_KEY_ERROR', 409);

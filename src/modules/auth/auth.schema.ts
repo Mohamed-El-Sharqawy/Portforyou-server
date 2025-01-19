@@ -6,13 +6,21 @@ export const authTypeDefs = gql`
     user: User!
   }
 
-  type Mutation {
-    register(input: RegisterInput!): AuthResponse!
+  input RegisterInput {
+    email: String!
+    password: String!
+    username: String!
   }
 
-  input RegisterInput {
-    clerkId: String!
+  input LoginInput {
     email: String!
-    username: String
+    password: String!
+  }
+
+  type Mutation {
+    register(input: RegisterInput!): AuthResponse!
+    login(input: LoginInput!): AuthResponse!
+    requestPasswordReset(email: String!): Boolean!
+    resetPassword(token: String!, newPassword: String!): Boolean!
   }
 `;
