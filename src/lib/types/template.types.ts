@@ -1,20 +1,21 @@
 export interface ITestimonialClient {
   client_img_url: string;
+  client_img_id?: string;
   client_name: string;
   client_company: string;
 }
 
 export interface IArikTestimonial {
   testimonial_img_url: string;
+  testimonial_img_id?: string;
   testimonial_heading: string;
   testimonial_paragraph: string;
   testimonial_client: ITestimonialClient;
 }
 
 export interface IArikProcessStep {
-  step_number: number;
-  step_slug: string;
   step_heading: string;
+  step_subheading: string;
   step_paragraph: string;
   step_points: string[];
 }
@@ -47,15 +48,21 @@ export interface IArikFooter {
   footer_paragraph: string;
 }
 
+export interface IArikLogos {
+  img_url: string;
+  img_id?: string;
+}
+
 export interface IArikWorkExperience {
   title: string;
   category: string;
   img_url: string;
+  img_id?: string;
 }
 
 export interface IArikTemplate {
   hero: IArikHero;
-  logos: string[];
+  logos: IArikLogos[];
   services: IArikService[];
   work: IArikWorkExperience[];
   process: IArikProcess;

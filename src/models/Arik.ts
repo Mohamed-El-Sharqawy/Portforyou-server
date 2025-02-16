@@ -1,4 +1,4 @@
-import { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import {
   IArikFooter,
   IArikHero,
@@ -8,11 +8,13 @@ import {
   IArikTestimonials,
   IArikWorkExperience,
   ITestimonialClient,
+  IArikLogos,
+  IArikProcessStep,
 } from "../lib/types/template.types";
 
 export interface IArik extends Document {
   hero: IArikHero;
-  logos: string[];
+  logos: IArikLogos[];
   services: IArikService[];
   work: IArikWorkExperience[];
   process: IArikProcess;
@@ -33,37 +35,72 @@ const ArikTestimonialSchema = new Schema<IArikTestimonial>({
   testimonial_client: TestimonialClientSchema,
 });
 
+const ArikProcessStepSchema = new Schema<IArikProcessStep>({
+  step_heading: String,
+  step_subheading: String,
+  step_paragraph: String,
+  step_points: [String],
+});
+
 export const ArikSchema = new Schema<IArik>({
   hero: {
     hero_heading: String,
+    hero_subheading: String,
     hero_paragraph: String,
   },
-  logos: [String],
-  services: [
-    {
-      title: String,
-      description: String,
-    },
-  ],
-  work: [
-    {
-      title: String,
-      category: String,
-      img_url: String,
-    },
-  ],
+  logos: {
+    type: [
+      {
+        img_url: String,
+        img_id: String,
+      },
+    ],
+    default: Array(6).fill({ img_url: "", img_id: "" }),
+  },
+  services: {
+    type: [
+      {
+        title: String,
+        description: String,
+      },
+    ],
+    default: Array(3).fill({ title: "", description: "" }),
+  },
+  work: {
+    type: [
+      {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          auto: true,
+        },
+        title: String,
+        category: String,
+        img_url: String,
+        img_id: String,
+        project_link: String,
+      },
+    ],
+    default: Array(4).fill({
+      project_link: "https://www.google.com",
+      title: "",
+      category: "",
+      img_url: "",
+      img_id: "",
+    }),
+  },
   process: {
     process_heading: String,
     process_paragraph: String,
-    steps: [
-      {
-        step_number: Number,
-        step_slug: String,
-        step_heading: String,
-        step_paragraph: String,
-        step_points: [String],
-      },
-    ],
+    steps: {
+      type: [ArikProcessStepSchema],
+      default: Array(5).fill({
+        step_heading: "",
+        step_subheading: "",
+        step_paragraph: "",
+        step_points: ["", "", "",],
+      }),
+    },
   },
   testimonials: {
     testimonials_heading: String,

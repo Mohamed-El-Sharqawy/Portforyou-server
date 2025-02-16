@@ -3,21 +3,22 @@ import { gql } from "graphql-tag";
 export const userTypeDefs = gql`
   type TestimonialClient {
     client_img_url: String
+    client_img_id: String
     client_name: String
     client_company: String
   }
 
   type ArikTestimonial {
     testimonial_img_url: String
+    testimonial_img_id: String
     testimonial_heading: String
     testimonial_paragraph: String
     testimonial_client: TestimonialClient
   }
 
   type ArikProcessStep {
-    step_number: Int
-    step_slug: String
     step_heading: String
+    step_subheading: String
     step_paragraph: String
     step_points: [String]
   }
@@ -35,6 +36,7 @@ export const userTypeDefs = gql`
 
   type ArikHero {
     hero_heading: String
+    hero_subheading: String
     hero_paragraph: String
   }
 
@@ -50,9 +52,23 @@ export const userTypeDefs = gql`
     footer_paragraph: String
   }
 
+  type ArikLogos {
+    img_url: String
+    img_id: String
+  }
+
+  type ArikWorkExperience {
+    id: String
+    project_link: String
+    title: String
+    category: String
+    img_url: String
+    img_id: String
+  }
+
   type Arik {
     hero: ArikHero
-    logos: [String]
+    logos: [ArikLogos]
     services: [ArikService]
     work: [ArikWorkExperience]
     process: ArikProcess
@@ -60,10 +76,9 @@ export const userTypeDefs = gql`
     footer: ArikFooter
   }
 
-  type ArikWorkExperience {
-    title: String
-    category: String
-    img_url: String
+  type UserPreferences {
+    colors: [String]!
+    profession: String!
   }
 
   type User {
@@ -75,24 +90,26 @@ export const userTypeDefs = gql`
     updatedAt: String!
     arikTemplate: Arik
     selectedTemplates: [String]
+    preferences: UserPreferences
   }
 
   input TestimonialClientInput {
     client_img_url: String
+    client_img_id: String
     client_name: String
     client_company: String
   }
 
   input ArikTestimonialInput {
     testimonial_img_url: String
+    testimonial_img_id: String
     testimonial_heading: String
     testimonial_paragraph: String
     testimonial_client: TestimonialClientInput
   }
 
   input ArikProcessStepInput {
-    step_number: Int
-    step_slug: String
+    step_subheading: String
     step_heading: String
     step_paragraph: String
     step_points: [String]
@@ -111,6 +128,7 @@ export const userTypeDefs = gql`
 
   input ArikHeroInput {
     hero_heading: String
+    hero_subheading: String
     hero_paragraph: String
   }
 
@@ -126,9 +144,22 @@ export const userTypeDefs = gql`
     footer_paragraph: String
   }
 
+  input ArikLogosInput {
+    img_url: String
+    img_id: String
+  }
+
+  input ArikWorkExperienceInput {
+    project_link: String
+    title: String
+    category: String
+    img_url: String
+    img_id: String
+  }
+
   input ArikInput {
     hero: ArikHeroInput
-    logos: [String]
+    logos: [ArikLogosInput]
     services: [ArikServiceInput]
     work: [ArikWorkExperienceInput]
     process: ArikProcessInput
@@ -136,10 +167,9 @@ export const userTypeDefs = gql`
     footer: ArikFooterInput
   }
 
-  input ArikWorkExperienceInput {
-    title: String
-    category: String
-    img_url: String
+  input UserPreferencesInput {
+    colors: [String]!
+    profession: String!
   }
 
   input UpdateUserInput {
@@ -159,5 +189,6 @@ export const userTypeDefs = gql`
     updateUserTemplate(id: ID!, template: ArikInput!): User
     addSelectedTemplate(id: ID!, templateName: String!): User
     removeSelectedTemplate(id: ID!, templateName: String!): User
+    updateUserPreferences(id: ID!, preferences: UserPreferencesInput!): User
   }
 `;

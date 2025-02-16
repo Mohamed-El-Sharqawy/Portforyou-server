@@ -1,6 +1,6 @@
 import logger from "../../lib/utils/logger";
-import { User } from "./user.model";
-import { IUser } from "./user.model";
+import { User } from "../../models/User";
+import { IUser } from "../../models/User";
 import { createDotNotationUpdate } from "../../lib/utils/object.utils";
 import { IArikTemplate } from "../../lib/types/template.types";
 import { handleMongoError } from "../../lib/utils/error.utils";
@@ -74,19 +74,35 @@ export class UserService {
     template: Partial<IArikTemplate>
   ): Promise<IUser | null> {
     try {
-      // Create update object with dot notation, handling nested objects
-      const updateObj = createDotNotationUpdate("arikTemplate", template);
+      // Create a deep copy to avoid modifying the input
+      const updatedTemplate = JSON.parse(JSON.stringify(template));
+
+      // Validate logos array length if present
+      if (Array.isArray(updatedTemplate?.logos)) {
+        if (updatedTemplate.logos.length !== 6) {
+          throw new Error('Logos array must contain exactly 6 items');
+        }
+      }
+
+      // Create update object with dot notation
+      const updateObj = createDotNotationUpdate("arikTemplate", updatedTemplate);
 
       // Only proceed if there are actual updates
       if (Object.keys(updateObj).length === 0) {
         return User.findById(id);
       }
 
-      return User.findByIdAndUpdate(
+      const updatedUser = await User.findByIdAndUpdate(
         id,
         { $set: updateObj },
         { new: true, runValidators: true }
       );
+
+      if (!updatedUser) {
+        throw new Error(`User not found with id: ${id}`);
+      }
+
+      return updatedUser;
     } catch (error) {
       logger.error("Error updating user template:", { error, userId: id });
       throw error;
@@ -130,6 +146,30 @@ export class UserService {
         templateName,
       });
       throw error;
+    }
+  }
+
+  async updateUserPreferences(
+    id: string,
+    preferences: { colors: string[]; profession: string }
+  ): Promise<IUser | null> {
+    try {
+      return User.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            preferences: preferences, 
+          },
+        },
+        { new: true, runValidators: true }
+      );
+    } catch (error) {
+      logger.error("Error updating user preferences:", {
+        error,
+        userId: id,
+        preferences,
+      });
+      throw handleMongoError(error);
     }
   }
 }

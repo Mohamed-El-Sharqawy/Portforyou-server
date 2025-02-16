@@ -1,9 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IArik, ArikSchema } from "../../models/Arik";
-import { SubscriptionType } from "../../lib/constants";
+import { IArik, ArikSchema } from "./Arik";
+import { SubscriptionType } from "../lib/constants";
 import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
+  _id: string;
   email: string;
   username: string;
   password?: string;
@@ -16,6 +17,10 @@ export interface IUser extends Document {
   arikTemplate: IArik;
   selectedTemplates: string[];
   subscription: SubscriptionType;
+  preferences: {
+    colors: string[];
+    profession: string;
+  };
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -57,13 +62,24 @@ const UserSchema = new Schema<IUser>(
     selectedTemplates: [
       {
         type: String,
-      },
+    },
     ],
     subscription: {
       type: String,
       enum: Object.values(SubscriptionType),
       default: SubscriptionType.TRIAL,
     },
+    preferences: {
+        colors: {
+          type: [String],
+          default: [],
+        },
+        profession: {
+          type: String,
+          default: "",
+        },
+        default: {},
+      },
   },
   {
     timestamps: true,

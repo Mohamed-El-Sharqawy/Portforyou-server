@@ -10,6 +10,11 @@ import cors from 'cors';
 import { typeDefs, resolvers } from './schema';
 import { DEFAULT_PORT } from "./lib/constants";
 
+interface MyContext {
+  token?: string;
+  req: express.Request;
+}
+
 export async function startServer() {
   const db = Database.getInstance();
   await db.connect();
@@ -17,7 +22,7 @@ export async function startServer() {
 
   const app = express();
   const httpServer = http.createServer(app);
-  const server = new ApolloServer({
+  const server = new ApolloServer<MyContext>({
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
@@ -32,8 +37,17 @@ export async function startServer() {
       credentials: true
     }),
     express.json(),
-    // @ts-ignore
-    expressMiddleware(server),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        // Get the authorization header
+        const token = req.headers.authorization || '';
+        
+        return {
+          token,
+          req,
+        };
+      },
+    }),
   );
 
   await new Promise<void>((resolve) => httpServer.listen({ port: DEFAULT_PORT }, resolve));

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { UserService } from "../user/user.service";
 import { ValidationError, AuthenticationError } from "../../lib/utils/error.utils";
-import { IUser } from "../user/user.model";
+import { IUser } from "../../models/User";
 import { promisify } from "util";
 import crypto from "crypto";
 
@@ -101,6 +101,7 @@ export class AuthService {
     userData: Partial<IUser>
   ): Promise<{ token: string; user: IUser }> {
     const existingUser = await this.userService.getUserByEmail(userData.email!);
+    
     if (existingUser) {
       throw new ValidationError("Email already exists");
     }

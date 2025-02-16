@@ -1,7 +1,7 @@
 import { AuthService } from "./auth.service";
 import { formatError } from "../../lib/utils/error.utils";
 import { GraphQLError } from "graphql";
-import { LoginInput, RegisterInput } from "./auth.types";
+import { LoginInput, RegisterInput } from "./types/auth.types";
 
 const authService = AuthService.getInstance();
 
