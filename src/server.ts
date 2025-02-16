@@ -33,7 +33,7 @@ export async function startServer() {
   app.use(
     '/graphql',
     cors<cors.CorsRequest>({ 
-      origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
+      origin: ['http://localhost:3000', 'https://studio.apollographql.com', "https://portforyou-beta.vercel.app"],
       credentials: true
     }),
     express.json(),
