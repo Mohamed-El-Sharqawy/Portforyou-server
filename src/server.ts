@@ -31,7 +31,7 @@ export async function startServer() {
   await server.start();
 
   app.use(
-    '/graphql',
+    '/api',
     cors<cors.CorsRequest>({ 
       origin: ['http://localhost:3000', 'https://studio.apollographql.com', "https://portforyou-beta.vercel.app"],
       credentials: true
@@ -51,7 +51,7 @@ export async function startServer() {
   );
 
   await new Promise<void>((resolve) => httpServer.listen({ port: DEFAULT_PORT }, resolve));
-  logger.info(`Server ready at http://localhost:${DEFAULT_PORT}/graphql`);
+  logger.info(`Server ready at http://localhost:${DEFAULT_PORT}/api`);
 
   return httpServer;
 }

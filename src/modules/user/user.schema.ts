@@ -9,8 +9,6 @@ export const userTypeDefs = gql`
   }
 
   type ArikTestimonial {
-    testimonial_img_url: String
-    testimonial_img_id: String
     testimonial_heading: String
     testimonial_paragraph: String
     testimonial_client: TestimonialClient
@@ -101,8 +99,6 @@ export const userTypeDefs = gql`
   }
 
   input ArikTestimonialInput {
-    testimonial_img_url: String
-    testimonial_img_id: String
     testimonial_heading: String
     testimonial_paragraph: String
     testimonial_client: TestimonialClientInput
